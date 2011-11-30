@@ -32,26 +32,10 @@ class tx_czwkhtmltopdf_controller {
 	 * @return void
 	 */
 	public function processHook(&$params, &$pObj) {
-		//TODO: I think there is a better way to get the temp folder
 
-		/**
-		 * @var tx_CzWkhtmltopdf_TemporaryFile
-		 */
-		$htmlFile = t3lib_div::makeInstance('tx_CzWkhtmltopdf_TemporaryFile');
-		/**
-		 * @var tx_CzWkhtmltopdf_TemporaryFile
-		 */
+		$converter = t3lib_div::makeInstance('tx_CzWkhtmltopdf_Converter');
 		$pdfFile = t3lib_div::makeInstance('tx_CzWkhtmltopdf_TemporaryFile');
-
-		$htmlFile->setContent($pObj->content);
-
-		$cmd = sprintf(
-			'/tmp/wkhtmltopdf-i386 %s %s',
-			$htmlFile->getServerFilePath(),
-			$pdfFile->getFilePath()
-		);
-
-		system($cmd);
+		$converter->convert($pObj->content, $pdfFile);
 
 		$pObj->content = $pdfFile->getContent();
 		header('Content-Type: application/pdf');
