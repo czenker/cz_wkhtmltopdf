@@ -33,23 +33,27 @@ class tx_czwkhtmltopdf_controller {
 	 */
 	public function processHook(&$params, &$pObj) {
 		//TODO: I think there is a better way to get the temp folder
-		$tempFolder = PATH_site.'typo3temp/';
-		$tempServerFolder = rtrim($obj->baseUrl, '/').'typo3temp/';
 
-		$fileName = $pObj->cHash ?
-			$pObj->cHash :
-			rand()
-		;
+		/**
+		 * @var tx_CzWkhtmltopdf_TemporaryFile
+		 */
+		$htmlFile = t3lib_div::makeInstance('tx_CzWkhtmltopdf_TemporaryFile');
+		/**
+		 * @var tx_CzWkhtmltopdf_TemporaryFile
+		 */
+		$pdfFile = t3lib_div::makeInstance('tx_CzWkhtmltopdf_TemporaryFile');
 
-		file_put_contents($tempFolder.$fileName.'.html', $pObj->content);
+		$htmlFile->setContent($pObj->content);
 
-		system(sprintf(
+		$cmd = sprintf(
 			'/tmp/wkhtmltopdf-i386 %s %s',
-			$tempServerFolder.$fileName.'.html',
-			$tempFolder.$fileName.'.pdf'
-		));
+			$htmlFile->getServerFilePath(),
+			$pdfFile->getFilePath()
+		);
 
-		$pObj->content = file_get_contents($tempFolder.$fileName.'.pdf');
+		system($cmd);
+
+		$pObj->content = $pdfFile->getContent();
 		header('Content-Type: application/pdf');
 
 	}
