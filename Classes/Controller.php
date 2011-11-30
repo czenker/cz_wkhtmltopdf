@@ -7,20 +7,23 @@
 class tx_CzWkhtmltopdf_Controller {
 
 	/**
-	 * convert non-cached pages via a TYPO3 hook
-	 *
 	 * @return void
 	 */
-	public function hookNoCache(&$params, &$obj) {
+	public function hookAll(&$params, &$obj) {
+//		$this->processHook($params, $obj);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function hookOutput(&$params, &$obj) {
 		$this->processHook($params, $obj);
 	}
 
 	/**
-	 * convert cached pages via a TYPO3 hook
-	 *
 	 * @return void
 	 */
-	public function hookCache(&$params, &$obj) {
+	public function hookCached(&$params, &$obj) {
 //		$this->processHook($params, $obj);
 	}
 
