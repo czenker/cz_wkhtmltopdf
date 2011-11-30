@@ -4,7 +4,7 @@
  * @license WTFPL v2
  * @author Christian Zenker <christian.zenker@599media.de>
  */
-class tx_czwkhtmltopdf_controller {
+class tx_CzWkhtmltopdf_Controller {
 
 	/**
 	 * convert non-cached pages via a TYPO3 hook
