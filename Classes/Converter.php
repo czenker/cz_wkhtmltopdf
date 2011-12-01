@@ -33,11 +33,12 @@ class tx_CzWkhtmltopdf_Converter {
 		}
 
 		$cmd = sprintf(
-			'/tmp/wkhtmltopdf-i386 %s %s &2>1',
-			$input->getServerFilePath(),
-			$output->getFilePath()
+			'%s %s %s &2>1',
+			Tx_CzWkhtmltopdf_Config::getBinaryPath(), // binary
+			$input->getServerFilePath(), // input file
+			$output->getFilePath() // output file
 		);
-
+		
 		system($cmd);
 
 		if($directReturn) {
