@@ -57,7 +57,7 @@ class tx_CzWkhtmltopdf_Converter {
 			escapeshellarg($outputFilePath)
 		);
 		
-		if(system($cmd, $returnVar) == FALSE) {
+		if(exec($cmd) == FALSE) {
 			throw new RuntimeException('Something went wrong while trying to create the PDF.');
 		};
 
