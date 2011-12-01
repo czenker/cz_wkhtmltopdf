@@ -5,5 +5,5 @@ binPathCustom =
 
 # cat=basic/enable/30; type=string; label=pageTypes to convert into pdf files. Seperate multiple values by commas.
 pageTypes = 806870
-# cat=basic/enable/40; type=options[disable|0,cachedOnly|1,all|3]; label=Limit PDF generation.
+# cat=basic/enable/40; type=options[0-disabled,1-cachedOnly,3-all]; label=Limit PDF generation.
 mode = 3
