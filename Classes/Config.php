@@ -93,4 +93,14 @@ class Tx_CzWkhtmltopdf_Config {
 		}
 	}
 
+	/**
+	 * get the operation mode of this extension
+	 *
+	 * @static
+	 * @return int
+	 */
+	public static function getMode() {
+		return intval(self::get('mode'));
+	}
+
 }

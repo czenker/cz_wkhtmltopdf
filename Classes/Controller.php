@@ -14,7 +14,8 @@ class tx_CzWkhtmltopdf_Controller {
 	 * @return void
 	 */
 	public function hookOutput(&$params, $pObj) {
-		if($pObj->no_cache) {
+		$enabled = Tx_CzWkhtmltopdf_Config::getMode() & 2;
+		if($enabled && $pObj->no_cache) {
 			$this->processHook($pObj);
 		}
 	}
@@ -26,7 +27,8 @@ class tx_CzWkhtmltopdf_Controller {
 	 * @return void
 	 */
 	public function hook_indexContent($pObj) {
-		if(!$pObj->no_cache) {
+		$enabled = Tx_CzWkhtmltopdf_Config::getMode() & 1;
+		if($enabled && !$pObj->no_cache) {
 			$this->processHook($pObj);
 		}
 	}
