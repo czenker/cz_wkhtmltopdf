@@ -52,8 +52,6 @@ class tx_CzWkhtmltopdf_Controller {
 		$converter->convert($pObj->content, $pdfFile);
 
 		$pObj->content = $pdfFile->getContent();
-		header('Content-Type: application/pdf');
-
 	}
 
 	/**
