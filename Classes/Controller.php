@@ -14,8 +14,11 @@ class tx_CzWkhtmltopdf_Controller {
 	 * @return void
 	 */
 	public function hookOutput(&$params, $pObj) {
-		$enabled = Tx_CzWkhtmltopdf_Config::getMode() & 2;
-		if($enabled && $pObj->no_cache) {
+		if(
+				Tx_CzWkhtmltopdf_Config::getMode() & 2      && // processing of non-cached pages is enabled
+				$this->isPageTypeEnabled($pObj->type)       && // the pageType matches
+				$pObj->no_cache                                // this page was not cached
+		) {
 			$this->processHook($pObj);
 		}
 	}
@@ -27,8 +30,11 @@ class tx_CzWkhtmltopdf_Controller {
 	 * @return void
 	 */
 	public function hook_indexContent($pObj) {
-		$enabled = Tx_CzWkhtmltopdf_Config::getMode() & 1;
-		if($enabled && !$pObj->no_cache) {
+		if(
+				Tx_CzWkhtmltopdf_Config::getMode() & 1      && // processing of cached pages is enabled
+				$this->isPageTypeEnabled($pObj->type)       && // the pageType matches
+				!$pObj->no_cache                               // this page will be cached
+		) {
 			$this->processHook($pObj);
 		}
 	}
@@ -48,6 +54,16 @@ class tx_CzWkhtmltopdf_Controller {
 		$pObj->content = $pdfFile->getContent();
 		header('Content-Type: application/pdf');
 
+	}
+
+	/**
+	 * returns true if the extension is configured to operate on this pageType
+	 *
+	 * @param integer $pageType
+	 * @return boolean
+	 */
+	protected function isPageTypeEnabled($pageType) {
+		return in_array($pageType, Tx_CzWkhtmltopdf_Config::getPageTypes());
 	}
 }
 

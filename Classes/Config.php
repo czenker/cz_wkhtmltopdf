@@ -103,4 +103,14 @@ class Tx_CzWkhtmltopdf_Config {
 		return intval(self::get('mode'));
 	}
 
+	/**
+	 * get the configured valid pageTypes
+	 *
+	 * @static
+	 * @return array
+	 */
+	public static function getPageTypes() {
+		return t3lib_div::intExplode(',', self::get('pageTypes'), true);
+	}
+
 }
