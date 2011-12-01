@@ -19,6 +19,7 @@ class tx_CzWkhtmltopdf_TemporaryFile {
 		$tempNam = tempnam($this->getTmpFolderPath(), 'cz_wkhtmltopdf');
 		$this->fileName = basename($tempNam);
 		if($ext) {
+			unlink($this->getFilePath());
 			$this->fileName = $this->fileName . '.' . ltrim($ext, '.');
 		}
 	}
