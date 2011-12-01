@@ -19,7 +19,7 @@ class tx_CzWkhtmltopdf_Converter {
 			/**
 			 * @var tx_CzWkhtmltopdf_TemporaryFile
 			 */
-			$input = t3lib_div::makeInstance('tx_CzWkhtmltopdf_TemporaryFile')->setContent($input);
+			$input = t3lib_div::makeInstance('tx_CzWkhtmltopdf_TemporaryFile', 'html')->setContent($input);
 		}
 
 		/**
@@ -56,7 +56,7 @@ class tx_CzWkhtmltopdf_Converter {
 			escapeshellarg($inputServerFilePath),
 			escapeshellarg($outputFilePath)
 		);
-
+		
 		if(system($cmd, $returnVar) == FALSE) {
 			throw new RuntimeException('Something went wrong while trying to create the PDF.');
 		};

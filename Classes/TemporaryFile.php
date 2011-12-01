@@ -14,8 +14,13 @@ class tx_CzWkhtmltopdf_TemporaryFile {
 	 * __construct()
 	 * @param string|null $fileName
 	 */
-	public function __construct($fileName = null) {
-		$this->setFileName($fileName);
+	public function __construct($ext = null) {
+		
+		$tempNam = tempnam($this->getTmpFolderPath(), 'cz_wkhtmltopdf');
+		$this->fileName = basename($tempNam);
+		if($ext) {
+			$this->fileName = $this->fileName . '.' . ltrim($ext, '.');
+		}
 	}
 
 	/**
@@ -35,23 +40,6 @@ class tx_CzWkhtmltopdf_TemporaryFile {
 	 * @var string
 	 */
 	protected $fileName;
-
-	/**
-	 * set the name of the file
-	 *
-	 * @param $fileName
-	 * @return tx_czWkhtmltopdf_TemporaryFile
-	 */
-	public function setFileName($fileName = null) {
-		if(!$fileName) {
-			$tempNam = tempnam($this->getTmpFolderPath(), 'cz_wkhtmltopdf');
-			$this->fileName = basename($tempNam);
-		} else {
-			$this->fileName = $fileName;
-		}
-
-		return $this;
-	}
 
 	/**
 	 * get the full filePath to access over the local file system
