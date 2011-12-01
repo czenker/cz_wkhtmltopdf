@@ -32,14 +32,34 @@ class tx_CzWkhtmltopdf_Converter {
 			$output = t3lib_div::makeInstance('tx_CzWkhtmltopdf_TemporaryFile');
 		}
 
+		if(!$input || !$output) {
+			throw new RuntimeException('Input or Output file object could not be created.');
+		}
+
+		$binary = Tx_CzWkhtmltopdf_Config::getBinaryPath();
+		$inputServerFilePath = $input->getServerFilePath();
+		$outputFilePath = $output->getFilePath();
+
+		if(empty($binary)) {
+			throw new InvalidArgumentException('No binary for wkhtmltopdf was specified.');
+		}
+		if(empty($inputServerFilePath)) {
+			throw new InvalidArgumentException('Could not determine the file path for the input file.');
+		}
+		if(empty($outputFilePath)) {
+			throw new InvalidArgumentException('Could not determine the file path for the output file.');
+		}
+
 		$cmd = sprintf(
-			'%s %s %s &2>1',
-			Tx_CzWkhtmltopdf_Config::getBinaryPath(), // binary
-			$input->getServerFilePath(), // input file
-			$output->getFilePath() // output file
+			'%s %s %s 2>&1',
+			$binary,
+			escapeshellarg($inputServerFilePath),
+			escapeshellarg($outputFilePath)
 		);
-		
-		system($cmd);
+
+		if(system($cmd, $returnVar) == FALSE) {
+			throw new RuntimeException('Something went wrong while trying to create the PDF.');
+		};
 
 		if($directReturn) {
 			return $output->getContent();

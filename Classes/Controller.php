@@ -14,11 +14,16 @@ class tx_CzWkhtmltopdf_Controller {
 	 * @return void
 	 */
 	public function hookOutput(&$params, $pObj) {
-		if(
-				Tx_CzWkhtmltopdf_Config::getMode() & 2      && // processing of non-cached pages is enabled
-				$this->isPageTypeEnabled($pObj->type)       && // the pageType matches
-				$pObj->no_cache                                // this page was not cached
-		) {
+		if(!$this->isPageTypeEnabled($pObj->type)) {
+			// if: post-processing is not enabled for this page type
+			return;
+		} elseif(!$pObj->no_cache) {
+			// if: page is cached -> page should already be processed
+			return;
+		} elseif(!(Tx_CzWkhtmltopdf_Config::getMode() & 2)) {
+			//if: PDF generation was disabled
+			throw new t3lib_error_http_PageNotFoundException('PDF generation was disabled for this page.');
+		} else {
 			$this->processHook($pObj);
 		}
 	}
@@ -30,11 +35,16 @@ class tx_CzWkhtmltopdf_Controller {
 	 * @return void
 	 */
 	public function hook_indexContent($pObj) {
-		if(
-				Tx_CzWkhtmltopdf_Config::getMode() & 1      && // processing of cached pages is enabled
-				$this->isPageTypeEnabled($pObj->type)       && // the pageType matches
-				!$pObj->no_cache                               // this page will be cached
-		) {
+		if(!$this->isPageTypeEnabled($pObj->type)) {
+			// if: post-processing is not enabled for this page type
+			return;
+		} elseif($pObj->no_cache) {
+			// if: page is not cached -> page will be processed before output
+			return;
+		} elseif(!(Tx_CzWkhtmltopdf_Config::getMode() & 1)) {
+			//if: PDF generation was disabled
+			throw new t3lib_error_http_PageNotFoundException('PDF generation was disabled for this page.');
+		} else {
 			$this->processHook($pObj);
 		}
 	}
@@ -49,6 +59,14 @@ class tx_CzWkhtmltopdf_Controller {
 
 		$converter = t3lib_div::makeInstance('tx_CzWkhtmltopdf_Converter');
 		$pdfFile = t3lib_div::makeInstance('tx_CzWkhtmltopdf_TemporaryFile');
+
+		if(!$converter) {
+			throw new RuntimeException('Converter could not be initialized.');
+		}
+		if(!$pdfFile) {
+			throw new RuntimeException('PDF file object could not be initialized.');
+		}
+
 		$converter->convert($pObj->content, $pdfFile);
 
 		$pObj->content = $pdfFile->getContent();

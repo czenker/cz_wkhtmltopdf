@@ -77,7 +77,14 @@ class tx_CzWkhtmltopdf_TemporaryFile {
 	 * @return string
 	 */
 	public function getContent() {
-		return file_get_contents($this->getFilePath());
+		$content = file_get_contents($this->getFilePath());
+		if($content === FALSE) {
+			throw new RuntimeException(sprintf(
+				'Could not read file "%s".',
+				$this->getFilePath()
+			));
+		}
+		return $content;
 	}
 
 	/**
@@ -87,7 +94,12 @@ class tx_CzWkhtmltopdf_TemporaryFile {
 	 * @return tx_CzWkhtmltopdf_TemporaryFile
 	 */
 	public function setContent($content) {
-		file_put_contents($this->getFilePath(), $content);
+		if(file_put_contents($this->getFilePath(), $content) === FALSE) {
+			throw new RuntimeException(sprintf(
+				'Could not write to file "%s".',
+				$this->getFilePath()
+			));
+		}
 		return $this;
 	}
 
@@ -108,6 +120,9 @@ class tx_CzWkhtmltopdf_TemporaryFile {
 	 * @return string
 	 */
 	protected function getTmpFolderServerPath() {
+		if(!$GLOBALS['TSFE']->baseUrl) {
+			throw new RuntimeException('There was no baseUrl set. Unfortunately this is not supported yet. Please set one in your TypoScript.');
+		}
 		return rtrim($GLOBALS['TSFE']->baseUrl, '/').'/typo3temp/';
 	}
 
