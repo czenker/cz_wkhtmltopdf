@@ -1,0 +1,9 @@
+# cat=basic/enable/10; type=options[i386,amd64,custom]; label=Select a wkhtmltopdf binary to use.
+binPath = i386
+# cat=basic/enable/20; type=string; label=Custom wkhtmltopdf binary. Don't forget to enable it with the option above.
+binPathCustom =
+
+# cat=basic/enable/30; type=string; label=pageTypes to convert into pdf files. Seperate multiple values by commas.
+pageTypes = 806870
+# cat=basic/enable/40; type=options[disable|0,cachedOnly|1,all|3]; label=Limit PDF generation.
+mode = 3
