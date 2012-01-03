@@ -14,7 +14,7 @@ class tx_CzWkhtmltopdf_Controller {
 	 * @return void
 	 */
 	public function hookOutput(&$params, $pObj) {
-		if(!$this->isPageTypeEnabled($pObj->type)) {
+		if(!$pObj->config['config']['tx_czwkhtmltopdf.']['enable']) {
 			// if: post-processing is not enabled for this page type
 			return;
 		} elseif(!$pObj->no_cache) {
@@ -35,7 +35,7 @@ class tx_CzWkhtmltopdf_Controller {
 	 * @return void
 	 */
 	public function hook_indexContent($pObj) {
-		if(!$this->isPageTypeEnabled($pObj->type)) {
+		if(!$pObj->config['config']['tx_czwkhtmltopdf.']['enable']) {
 			// if: post-processing is not enabled for this page type
 			return;
 		} elseif($pObj->no_cache) {
@@ -70,16 +70,6 @@ class tx_CzWkhtmltopdf_Controller {
 		$converter->convert($pObj->content, $pdfFile);
 
 		$pObj->content = $pdfFile->getContent();
-	}
-
-	/**
-	 * returns true if the extension is configured to operate on this pageType
-	 *
-	 * @param integer $pageType
-	 * @return boolean
-	 */
-	protected function isPageTypeEnabled($pageType) {
-		return in_array($pageType, Tx_CzWkhtmltopdf_Config::getPageTypes());
 	}
 }
 
