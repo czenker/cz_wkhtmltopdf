@@ -12,9 +12,10 @@ class tx_CzWkhtmltopdf_Converter {
 	/**
 	 * @param string|tx_CzWkhtmltopdf_TemporaryFile $input
 	 * @param tx_CzWkhtmltopdf_TemporaryFile|null $output
+	 * @param array $parameters
 	 * @return
 	 */
-	public function convert($input, $output = null) {
+	public function convert($input, $output = null, $parameters = array()) {
 		if(!$input instanceof tx_CzWkhtmltopdf_TemporaryFile) {
 			/**
 			 * @var tx_CzWkhtmltopdf_TemporaryFile
@@ -51,12 +52,13 @@ class tx_CzWkhtmltopdf_Converter {
 		}
 
 		$cmd = sprintf(
-			'%s %s %s 2>&1',
+			'%s %s %s %s 2>&1',
 			$binary,
+			$this->formatBinaryParameters($parameters),
 			escapeshellarg($inputServerFilePath),
 			escapeshellarg($outputFilePath)
 		);
-		
+
 		if(exec($cmd) == FALSE) {
 			throw new RuntimeException('Something went wrong while trying to create the PDF.');
 		};
@@ -64,6 +66,28 @@ class tx_CzWkhtmltopdf_Converter {
 		if($directReturn) {
 			return $output->getContent();
 		}
+	}
+
+	/**
+	 * format and escape all parameters for the binary call
+	 *
+	 * @param array $parameters
+	 * @return string
+	 */
+	protected function formatBinaryParameters($parameters) {
+		$return = array();
+		foreach($parameters as $name=>$value) {
+			if($value !== '') {
+				$return[] = sprintf(
+					'--%s %s',
+					escapeshellcmd($name),
+					escapeshellarg($value)
+				);
+			} else {
+				$return[] = '--'.escapeshellcmd($name);
+			}
+		}
+		return implode(' ',$return);
 	}
 
 }

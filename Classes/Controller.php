@@ -64,7 +64,7 @@ class tx_CzWkhtmltopdf_Controller {
 			throw new RuntimeException('PDF file object could not be initialized.');
 		}
 
-		$converter->convert($pObj->content, $pdfFile);
+		$converter->convert($pObj->content, $pdfFile, $pObj->config['config']['tx_czwkhtmltopdf.']['binParameters.']);
 
 		$pObj->content = $pdfFile->getContent();
 	}
