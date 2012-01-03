@@ -20,8 +20,8 @@ class tx_CzWkhtmltopdf_Controller {
 		} elseif(!$pObj->no_cache) {
 			// if: page is cached -> page should already be processed
 			return;
-		} elseif(!(Tx_CzWkhtmltopdf_Config::getMode() & 2)) {
-			//if: PDF generation was disabled
+		} elseif($pObj->config['config']['tx_czwkhtmltopdf.']['disableInt']) {
+			//if: PDF generation was disabled for non-cached pages
 			throw new t3lib_error_http_PageNotFoundException('PDF generation was disabled for this page.');
 		} else {
 			$this->processHook($pObj);
@@ -41,9 +41,6 @@ class tx_CzWkhtmltopdf_Controller {
 		} elseif($pObj->no_cache) {
 			// if: page is not cached -> page will be processed before output
 			return;
-		} elseif(!(Tx_CzWkhtmltopdf_Config::getMode() & 1)) {
-			//if: PDF generation was disabled
-			throw new t3lib_error_http_PageNotFoundException('PDF generation was disabled for this page.');
 		} else {
 			$this->processHook($pObj);
 		}
