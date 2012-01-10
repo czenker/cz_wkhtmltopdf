@@ -14,7 +14,7 @@ $EM_CONF[$_EXTKEY] = array(
 	// if other extensions use the contentPostProc hooks, we need should generate the pdf after that
 	'priority' => 'bottom',
 	'module' => '',
-	'state' => 'stable',
+	'state' => 'experimental',
 	'internal' => '',
 	'uploadfolder' => 0,
 	'createDirs' => '',
