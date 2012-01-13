@@ -5,6 +5,7 @@ return array(
 	'tx_czwkhtmltopdf_config' => $extensionClassesPath . 'Config.php',
 	'tx_czwkhtmltopdf_controller' => $extensionClassesPath . 'Controller.php',
 	'tx_czwkhtmltopdf_converter' => $extensionClassesPath . 'Converter.php',
+	'tx_czwkhtmltopdf_report' => $extensionClassesPath . 'Report.php',
 
 );
 ?>
