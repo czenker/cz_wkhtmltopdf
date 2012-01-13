@@ -85,9 +85,9 @@ class Tx_CzWkhtmltopdf_Config {
 	public static function getBinaryPath() {
 		$binPath = self::get('binPath');
 		if($binPath === 'i386') {
-			return t3lib_extMgm::extPath(self::EXTKEY, 'Vendor/wkhtmltopdf/wkhtmltopdf-i386');
+			return t3lib_extMgm::extPath(self::EXTKEY, 'Vendor/wkhtmltopdf/wkhtmltopdf-0.11.0_rc1-static-i386');
 		} elseif($binPath === 'amd64') {
-			return t3lib_extMgm::extPath(self::EXTKEY, 'Vendor/wkhtmltopdf/wkhtmltopdf-amd64');
+			return t3lib_extMgm::extPath(self::EXTKEY, 'Vendor/wkhtmltopdf/wkhtmltopdf-0.11.0_rc1-static-amd64');
 		} else {
 			return self::get('binPathCustom');
 		}
