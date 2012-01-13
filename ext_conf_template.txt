@@ -2,6 +2,3 @@
 binPath = i386
 # cat=basic/enable/20; type=string; label=Custom wkhtmltopdf binary. Don't forget to enable it with the option above.
 binPathCustom =
-
-# cat=basic/enable/40; type=options[0-disabled,1-cachedOnly,3-all]; label=Limit PDF generation.
-mode = 3
