@@ -59,7 +59,7 @@ class tx_CzWkhtmltopdf_Converter {
 
 		$cmd = sprintf(
 			'%s %s - -',
-			$binary,
+			escapeshellcmd($binary),
 			$this->formatBinaryParameters($parameters)
 		);
 
