@@ -10,62 +10,63 @@
 class tx_CzWkhtmltopdf_Converter {
 
 	/**
-	 * @param string|tx_CzWkhtmltopdf_TemporaryFile $input
-	 * @param tx_CzWkhtmltopdf_TemporaryFile|null $output
+	 * @see http://code.google.com/p/wkhtmltopdf/wiki/IntegrationWithPhp
+	 *
+	 * @param string $input
 	 * @param array $parameters
 	 * @return
 	 */
-	public function convert($input, $output = null, $parameters = array()) {
-		if(!$input instanceof tx_CzWkhtmltopdf_TemporaryFile) {
-			/**
-			 * @var tx_CzWkhtmltopdf_TemporaryFile
-			 */
-			$input = t3lib_div::makeInstance('tx_CzWkhtmltopdf_TemporaryFile', 'html')->setContent($input);
-		}
-
-		/**
-		 * just remember if this method should return the result as string
-		 * @var bool
-		 */
-		$directReturn = is_null($out);
-
-		if(!$output instanceof tx_CzWkhtmltopdf_TemporaryFile) {
-			$output = t3lib_div::makeInstance('tx_CzWkhtmltopdf_TemporaryFile');
-		}
-
-		if(!$input || !$output) {
-			throw new RuntimeException('Input or Output file object could not be created.');
-		}
+	public function convert($input, $parameters = array()) {
 
 		$binary = Tx_CzWkhtmltopdf_Config::getBinaryPath();
-		$inputServerFilePath = $input->getServerFilePath();
-		$outputFilePath = $output->getFilePath();
 
 		if(empty($binary)) {
 			throw new InvalidArgumentException('No binary for wkhtmltopdf was specified.');
 		}
-		if(empty($inputServerFilePath)) {
-			throw new InvalidArgumentException('Could not determine the file path for the input file.');
-		}
-		if(empty($outputFilePath)) {
-			throw new InvalidArgumentException('Could not determine the file path for the output file.');
-		}
+
+		/*
+		 * use stdin and stdout for file creation (no temporary files needed)
+		 *
+		 * short explanation:
+		 *   1. the two dashes (-) in the $cmd ask the binary to read from stdin and write to stdout
+		 *   2. proc_open() executes the binary and allows reading/writing of stdin and stdout
+		 *
+		 * @see http://code.google.com/p/wkhtmltopdf/wiki/IntegrationWithPhp
+		 * @see http://php.net/manual/en/function.proc-open.php
+		 */
 
 		$cmd = sprintf(
-			'%s %s %s %s 2>&1',
+			'%s %s - -',
 			$binary,
-			$this->formatBinaryParameters($parameters),
-			escapeshellarg($inputServerFilePath),
-			escapeshellarg($outputFilePath)
+			$this->formatBinaryParameters($parameters)
 		);
 
-		if(exec($cmd) == FALSE) {
-			throw new RuntimeException('Something went wrong while trying to create the PDF.');
-		};
+		$proc=proc_open($cmd,array(0=>array('pipe','r'),1=>array('pipe','w'),2=>array('pipe','w')),$pipes);
+        fwrite($pipes[0],$input);
+        fclose($pipes[0]);
+        $stdout=stream_get_contents($pipes[1]);
+        fclose($pipes[1]);
+        $stderr=stream_get_contents($pipes[2]);
+        fclose($pipes[2]);
+        $returnCode = proc_close($proc);
 
-		if($directReturn) {
-			return $output->getContent();
+		if(intval($returnCode) > 1) {
+			// usually thrown when an invalid binary is called
+			throw new RuntimeException('A shell error occured while trying to run WKPDF: '.$returnCode);
 		}
+
+		$stderrL = strtolower($stderr);
+		if(strpos($stderrL,'error') !== FALSE || strpos($stderrL,'unknown') !== FALSE) {
+			t3lib_div::devLog('WKPDF threw an error: <pre>'.$stderr.'</pre>', Tx_CzWkhtmltopdf_Config::EXTKEY, t3lib_div::SYSLOG_SEVERITY_FATAL);
+			throw new RuntimeException('WKPDF threw an error when trying to create a PDF. Developers see the developer log for more information.');
+		}
+
+		if(trim($stdout) == '') {
+			t3lib_div::devLog('WKPDF did not return anything: <pre>'.$stderr.'</pre>', Tx_CzWkhtmltopdf_Config::EXTKEY, t3lib_div::SYSLOG_SEVERITY_FATAL);
+			throw new RuntimeException('WKPDF did not return anything when trying to create a PDF. Developers see the developer log for more information.');
+		}
+
+		return $stdout;
 	}
 
 	/**

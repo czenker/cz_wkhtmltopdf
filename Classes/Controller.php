@@ -55,18 +55,12 @@ class tx_CzWkhtmltopdf_Controller {
 	public function processHook($pObj) {
 
 		$converter = t3lib_div::makeInstance('tx_CzWkhtmltopdf_Converter');
-		$pdfFile = t3lib_div::makeInstance('tx_CzWkhtmltopdf_TemporaryFile');
 
 		if(!$converter) {
 			throw new RuntimeException('Converter could not be initialized.');
 		}
-		if(!$pdfFile) {
-			throw new RuntimeException('PDF file object could not be initialized.');
-		}
 
-		$converter->convert($pObj->content, $pdfFile, $pObj->config['config']['tx_czwkhtmltopdf.']['binParameters.']);
-
-		$pObj->content = $pdfFile->getContent();
+		$pObj->content = $converter->convert($pObj->content, $pObj->config['config']['tx_czwkhtmltopdf.']['binParameters.']);
 	}
 }
 
