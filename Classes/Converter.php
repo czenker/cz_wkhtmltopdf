@@ -35,10 +35,10 @@ class tx_CzWkhtmltopdf_Converter {
 	 * @see http://code.google.com/p/wkhtmltopdf/wiki/IntegrationWithPhp
 	 *
 	 * @param string $input
-	 * @param array $parameters
+	 * @param array $options
 	 * @return
 	 */
-	public function convert($input, $parameters = array()) {
+	public function convert($input, $options = array()) {
 
 		$binary = Tx_CzWkhtmltopdf_Config::getBinaryPath();
 
@@ -60,7 +60,7 @@ class tx_CzWkhtmltopdf_Converter {
 		$cmd = sprintf(
 			'%s %s - -',
 			escapeshellcmd($binary),
-			$this->formatBinaryParameters($parameters)
+			$this->formatBinaryOptions($options)
 		);
 
 		$proc=proc_open($cmd,array(0=>array('pipe','r'),1=>array('pipe','w'),2=>array('pipe','w')),$pipes);
@@ -92,14 +92,14 @@ class tx_CzWkhtmltopdf_Converter {
 	}
 
 	/**
-	 * format and escape all parameters for the binary call
+	 * format and escape all options for the binary call
 	 *
-	 * @param array $parameters
+	 * @param array $options
 	 * @return string
 	 */
-	protected function formatBinaryParameters($parameters) {
+	protected function formatBinaryOptions($options) {
 		$return = array();
-		foreach($parameters as $name=>$value) {
+		foreach($options as $name=>$value) {
 			if($value !== '') {
 				$return[] = sprintf(
 					'--%s %s',

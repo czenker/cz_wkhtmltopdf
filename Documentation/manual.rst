@@ -205,13 +205,13 @@ If you used the configuration above this would be ``pdf.config.tx_czwkhtmltopdf`
 	You can easily set this value to ``0`` and remove ``Content-Type: application/pdf`` from ``additionalHeaders`` to
 	check how your HTML output looks like.
 
-``binParameters``:
-	You can pass your own parameters to the binary. ``binParameters`` is an array where each key is used as parameter name
-	and the value - if there is one - as parameter value.
+``binOptions``:
+	You can pass your own options to the binary. ``binOptions`` is an array where each key is used as option name
+	and the value - if there is one - as option value.
 
 	For example this::
 
-		binParameters {
+		binOptions {
 		   footer-right = [page]/[toPage]
 		   grayscale =
 		}
@@ -239,8 +239,8 @@ If you used the configuration above this would be ``pdf.config.tx_czwkhtmltopdf`
 
 
 
-wkhtmltopdf parameters
-----------------------
+wkhtmltopdf options
+-------------------
 
 Here is a selection of often used options. For a full list of all available options call the binary with the ``-H`` option.
 

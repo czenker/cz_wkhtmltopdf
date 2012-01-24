@@ -90,7 +90,7 @@ class tx_CzWkhtmltopdf_Controller {
 			throw new RuntimeException('Converter could not be initialized.');
 		}
 
-		$this->pObj->content = $converter->convert($this->pObj->content, $this->pObj->config['config']['tx_czwkhtmltopdf.']['binParameters.']);
+		$this->pObj->content = $converter->convert($this->pObj->content, $this->pObj->config['config']['tx_czwkhtmltopdf.']['binOptions.']);
 	}
 
 	/**
