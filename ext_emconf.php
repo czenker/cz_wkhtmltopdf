@@ -11,7 +11,7 @@ $EM_CONF[$_EXTKEY] = array(
 	'shy' => '',
 	'dependencies' => '',
 	'conflicts' => '',
-	// if other extensions use the contentPostProc hooks, we need should generate the pdf after that
+	// if other extensions use the contentPostProc hooks, we should typically generate the pdf after that
 	'priority' => 'bottom',
 	'module' => '',
 	'state' => 'experimental',
