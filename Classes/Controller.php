@@ -90,7 +90,7 @@ class tx_CzWkhtmltopdf_Controller {
 			throw new RuntimeException('Converter could not be initialized.');
 		}
 
-		$this->pObj->content = $converter->convert($this->pObj->content, $this->pObj->config['config']['tx_czwkhtmltopdf.']['binOptions.']);
+		$this->pObj->content = $converter->convert($this->pObj->content, $this->getBinaryOptions());
 	}
 
 	/**
@@ -122,6 +122,23 @@ class tx_CzWkhtmltopdf_Controller {
 			//if: tx_czwkhtmltopdf was explicitly disabled
 			$this->throw404('PDF generation was disabled for this page.');
 		}
+	}
+
+	/**
+	 * get the stdWrapped options
+	 *
+	 * @return array
+	 */
+	protected function getBinaryOptions() {
+		if(
+			!array_key_exists('tx_czwkhtmltopdf.', $this->pObj->config['config']) ||
+			!array_key_exists('binOptions.', $this->pObj->config['config']['tx_czwkhtmltopdf.']) ||
+			!is_array($this->pObj->config['config']['tx_czwkhtmltopdf.']['binOptions.'])
+		) {
+			// if: configuration is invalid
+			return array();
+		}
+		return $this->pObj->config['config']['tx_czwkhtmltopdf.']['binOptions.'];
 	}
 
 	/**
