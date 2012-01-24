@@ -52,7 +52,7 @@ class tx_CzWkhtmltopdf_Controller {
 		} elseif($this->pObj->config['config']['tx_czwkhtmltopdf.']['disableInt']) {
 			//@deprecated don't use disabledInt anymore. Use stdWrap of enable instead
 			//if: PDF generation was disabled for non-cached pages
-			throw new t3lib_error_http_PageNotFoundException('PDF generation was disabled for this page.');
+			$this->throw404('PDF generation was disabled for this page.');
 		} else {
 			$this->processHook();
 		}
@@ -95,6 +95,9 @@ class tx_CzWkhtmltopdf_Controller {
 
 	/**
 	 * returns true if this page should be converted to PDF
+	 * if explicitly disabled it throws an exception for TYPO3 4.6 and up or
+	 * calls tslib_fe::pageNotFoundAndExit() for TYPO3 4.5 and below
+	 *
 	 * @throws t3lib_error_http_PageNotFoundException
 	 * @return boolean
 	 */
@@ -117,10 +120,26 @@ class tx_CzWkhtmltopdf_Controller {
 			return true;
 		} else {
 			//if: tx_czwkhtmltopdf was explicitly disabled
-			throw new t3lib_error_http_PageNotFoundException('PDF generation was disabled for this page.');
+			$this->throw404('PDF generation was disabled for this page.');
 		}
 	}
 
+	/**
+	 * abort page rendering and show a 404 page
+	 *
+	 * @param $message
+	 * @throws t3lib_error_http_PageNotFoundException
+	 */
+	protected function throw404($message) {
+
+		if(class_exists('t3lib_error_http_PageNotFoundException')) {
+			//if: TYPO3 4.6 and above
+			throw new t3lib_error_http_PageNotFoundException($message);
+		} else {
+			//if: TYPO3 4.5 and below
+			$this->pObj->pageNotFoundAndExit($message);
+		}
+	}
 
 }
 
