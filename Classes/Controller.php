@@ -29,6 +29,11 @@
 class tx_CzWkhtmltopdf_Controller {
 
 	/**
+	 * @var tslib_fe
+	 */
+	protected $pObj;
+
+	/**
 	 * called before any page content is send to the browser
 	 *
 	 * @param array $params
@@ -36,17 +41,20 @@ class tx_CzWkhtmltopdf_Controller {
 	 * @return void
 	 */
 	public function hookOutput(&$params, $pObj) {
-		if(!$pObj->config['config']['tx_czwkhtmltopdf.']['enable']) {
-			// if: post-processing is not enabled for this page type
-			return;
-		} elseif(!$pObj->no_cache) {
+		$this->pObj = $pObj;
+
+		if(!$this->pObj->no_cache) {
 			// if: page is cached -> page should already be processed
 			return;
-		} elseif($pObj->config['config']['tx_czwkhtmltopdf.']['disableInt']) {
+		} elseif(!$this->isEnabled()) {
+			// if: post-processing is not enabled for this page type
+			return;
+		} elseif($this->pObj->config['config']['tx_czwkhtmltopdf.']['disableInt']) {
+			//@deprecated don't use disabledInt anymore. Use stdWrap of enable instead
 			//if: PDF generation was disabled for non-cached pages
 			throw new t3lib_error_http_PageNotFoundException('PDF generation was disabled for this page.');
 		} else {
-			$this->processHook($pObj);
+			$this->processHook();
 		}
 	}
 
@@ -57,33 +65,63 @@ class tx_CzWkhtmltopdf_Controller {
 	 * @return void
 	 */
 	public function hook_indexContent($pObj) {
-		if(!$pObj->config['config']['tx_czwkhtmltopdf.']['enable']) {
-			// if: post-processing is not enabled for this page type
-			return;
-		} elseif($pObj->no_cache) {
+		$this->pObj = $pObj;
+
+		if($this->pObj->no_cache) {
 			// if: page is not cached -> page will be processed before output
 			return;
+		} elseif(!$this->isEnabled()) {
+			// if: post-processing is not enabled for this page type
+			return;
 		} else {
-			$this->processHook($pObj);
+			$this->processHook();
 		}
 	}
 
 	/**
 	 * process a hook
 	 *
-	 * @param tslib_fe $pObj
 	 * @return void
 	 */
-	public function processHook($pObj) {
-
+	protected function processHook() {
 		$converter = t3lib_div::makeInstance('tx_CzWkhtmltopdf_Converter');
 
 		if(!$converter) {
 			throw new RuntimeException('Converter could not be initialized.');
 		}
 
-		$pObj->content = $converter->convert($pObj->content, $pObj->config['config']['tx_czwkhtmltopdf.']['binParameters.']);
+		$this->pObj->content = $converter->convert($this->pObj->content, $this->pObj->config['config']['tx_czwkhtmltopdf.']['binParameters.']);
 	}
+
+	/**
+	 * returns true if this page should be converted to PDF
+	 * @throws t3lib_error_http_PageNotFoundException
+	 * @return boolean
+	 */
+	protected function isEnabled() {
+
+		if(
+			!array_key_exists('tx_czwkhtmltopdf.', $this->pObj->config['config']) ||
+			(
+				!array_key_exists('enable', $this->pObj->config['config']['tx_czwkhtmltopdf.']) &&
+				!array_key_exists('enable.', $this->pObj->config['config']['tx_czwkhtmltopdf.'])
+			)
+		) {
+			//if: tx_czwkhtmltopdf was not configured for this page type
+			return false;
+		} elseif($GLOBALS['TSFE']->cObj->stdWrap(
+			$this->pObj->config['config']['tx_czwkhtmltopdf.']['enable'],
+			$this->pObj->config['config']['tx_czwkhtmltopdf.']['enable.']
+		)) {
+			//if: tx_czwkhtmltopdf was configured and is enabled
+			return true;
+		} else {
+			//if: tx_czwkhtmltopdf was explicitly disabled
+			throw new t3lib_error_http_PageNotFoundException('PDF generation was disabled for this page.');
+		}
+	}
+
+
 }
 
  
