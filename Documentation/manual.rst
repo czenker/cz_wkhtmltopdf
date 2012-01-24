@@ -199,23 +199,11 @@ Except for the path of the binary every configuration is done via Typoscript in 
 
 If you used the configuration above this would be ``pdf.config.tx_czwkhtmltopdf``.
 
-``enable``
-	If set to ``1`` the conversion from HTML to PDF is triggered.
+``enable`` (boolean + stdWrap)
+	If set to ``1`` the conversion from HTML to PDF is triggered. You can also use stdWrap here.
 
 	You can easily set this value to ``0`` and remove ``Content-Type: application/pdf`` from ``additionalHeaders`` to
 	check how your HTML output looks like.
-
-``disableInt``
-	Converting pages puts some load on your server. That's usually acceptable as long as the result is cached for the
-	next few requests. But for a non-cached request, where the conversion is done for every request, this might be
-	a way to `DoS attack <http://en.wikipedia.org/wiki/Denial-of-service_attack>`_ your server.
-
-	To disable conversion of non-cached pages, set this option to ``1``. Your user will see a 404-error when trying to
-	access such a page.
-
-	.. NOTE::
-		Please keep in mind, that if you are logged-in to the backend of TYPO3 none of your requested pages will be cached.
-		So you won't see any PDF files until you log out or use a different browser.
 
 ``binParameters``:
 	You can pass your own parameters to the binary. ``binParameters`` is an array where each key is used as parameter name
@@ -232,6 +220,23 @@ If you used the configuration above this would be ``pdf.config.tx_czwkhtmltopdf`
 
 	For a full list of all available options call the binary with the ``-H`` option or see the list in the next chapter
 	for a list of regularly used options.
+
+``disableInt``
+
+	.. WARNING::
+		This option is deprecated. Use the stdWrap capabilities of ``enable`` instead.
+
+	Converting pages puts some load on your server. That's usually acceptable as long as the result is cached for the
+	next few requests. But for a non-cached request, where the conversion is done for every request, this might be
+	a way to `DoS attack <http://en.wikipedia.org/wiki/Denial-of-service_attack>`_ your server.
+
+	To disable conversion of non-cached pages, set this option to ``1``. Your user will see a 404-error when trying to
+	access such a page.
+
+	.. NOTE::
+		Please keep in mind, that if you are logged-in to the backend of TYPO3 none of your requested pages will be cached.
+		So you won't see any PDF files until you log out or use a different browser.
+
 
 
 wkhtmltopdf parameters
